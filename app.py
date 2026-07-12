@@ -1,168 +1,146 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import os
 
-# Page theme configuration
-st.set_page_config(
-    page_title="Automotive Finance Calculator Dashboard", 
-    layout="wide", 
-    initial_sidebar_state="expanded"
-)
+st.set_page_config(page_title="Mitsubishi Finance Calculator", layout="wide")
 
-# --- 1. DATA CATALOGS EXTRACTED FROM THE UPDATED TEMPLATES ---
-VEHICLE_CATALOG = {
-    "Attrage G16 (MY-2025)": {"base_price": 40400, "year": "2025"},
-    "Destinator PR (MY-2026)": {"base_price": 95900, "year": "2026"}
-}
-
-# Explicitly separated catalog inputs to prevent key conflicts
-ADDONS_CATALOG = {
-    "2025": [
-        {"name": "FO Ceramic+ Intr&Extr CeramicGold WdwTnt", "default_price": 0.0, "checked": False},
-        {"name": "FO Exterior ceramic All Cars SCOTCHGUARD", "default_price": 0.0, "checked": False},
-        {"name": "Extended Warranty", "default_price": 0.0, "checked": False},
-        {"name": "VRI", "default_price": 1590.58, "checked": True},
-        {"name": "Vehicle Insurance", "default_price": 3625.00, "checked": True},
-        {"name": "RMC-10-70KMS", "default_price": 5400.00, "checked": True}
-    ],
-    "2026": [
-        {"name": "FO Ceramic+ Intr&Extr CeramicGold WdwTnt", "default_price": 2700.00, "checked": True},
-        {"name": "FO Exterior ceramic All Cars SCOTCHGUARD", "default_price": 0.0, "checked": False},
-        {"name": "Extended Warranty", "default_price": 2000.00, "checked": True},
-        {"name": "VRI", "default_price": 3722.92, "checked": True},
-        {"name": "Vehicle Insurance", "default_price": 4081.14, "checked": True},
-        {"name": "RMC-10-70KMS", "default_price": 6600.00, "checked": True}
-    ]
-}
-
-STANDARD_INTEREST_RATE = 0.0249  
-SUBVENTION_MULTIPLIERS = {1: 0.0000, 2: 0.0339, 3: 0.0339, 4: 0.0678, 5: 0.1017}
-
-# --- 2. ADVANCED FINANCIAL ENGINE ---
-def calculate_deal_metrics(base_price, year, selected_addons, dp_percentage):
-    total_addons = sum([item['price'] for item in selected_addons])
+# ------------------------------------------------------------------
+# AUTOMATIC EXCEL DATA EXTRACTION ENGINE
+# ------------------------------------------------------------------
+@st.cache_data
+def load_all_vehicle_data(file_path):
+    if not os.path.exists(file_path):
+        return {}
     
-    vat_amount = base_price * 0.05
-    vehicle_with_vat = base_price + vat_amount
+    xls = pd.ExcelFile(file_path)
+    catalog = {}
     
-    full_value = vehicle_with_vat + total_addons
-    down_payment = full_value * (dp_percentage / 100)
-    finance_amount = full_value - down_payment
-    
-    tenure_matrix = []
-    for years in [1, 2, 3, 4, 5]:
-        months = years * 12
-        
-        # Standard Plan Amortization
-        total_interest = finance_amount * STANDARD_INTEREST_RATE * years
-        standard_emi = (finance_amount + total_interest) / months
-        
-        # Subvention Tier Adjustments
-        sub_factor = SUBVENTION_MULTIPLIERS[years]
-        subvention_discount = finance_amount * sub_factor
-        
-        if years == 1:
-            subvention_emi = standard_emi
-        else:
-            subvention_emi = standard_emi - (subvention_discount / months) if sub_factor > 0 else standard_emi
+    # Loop through all individual variant sheets
+    for sheet in xls.sheet_names:
+        # Ignore main interactive template sheets
+        if sheet in ['Structure', 'MY-2025', 'MY-2026']:
+            continue
             
-        monthly_savings = standard_emi - subvention_emi
+        try:
+            df = pd.read_excel(xls, sheet_name=sheet, header=None)
+            
+            # 1. Extract Model Information
+            model_name = str(df.iloc[3, 2]).strip()  # Cell C4
+            model_code = str(df.iloc[3, 3]).strip()  # Cell D4
+            
+            # Fallback to sheet name if cell parsing is blank
+            if not model_name or model_name == "nan":
+                model_name = sheet
+                
+            # Determine Year based on sheet name suffix
+            year = "2026" if sheet.endswith("26") else "2025"
+            display_label = f"{model_name} ({year})"
+            
+            # 2. Extract Key Financial Constants
+            base_price = float(df.iloc[5, 1])          # Cell B6 (Vehicle Price)
+            vat_charges = float(df.iloc[5, 5])         # Cell F6 (Total VAT Charges)
+            interest_rate = float(df.iloc[17, 3])       # Cell D18 (Bank Interest Rate)
+            
+            # 3. Extract Accessories Matrix
+            accessories = {}
+            # Loop over rows 9 through 14 (0-indexed indices 9 to 14)
+            for r_idx in range(9, 15):
+                acc_name = str(df.iloc[r_idx, 1]).strip()
+                acc_status = str(df.iloc[r_idx, 2]).strip().upper()
+                try:
+                    acc_val = float(df.iloc[r_idx, 3])
+                except:
+                    acc_val = 0.0
+                
+                if acc_name and acc_name != "nan":
+                    accessories[acc_name] = {
+                        "price": acc_val,
+                        "default_checked": True if acc_status == "YES" else False
+                    }
+            
+            # Store everything systematically under its clear UI name
+            catalog[display_label] = {
+                "base_price": base_price,
+                "interest_rate": interest_rate,
+                "vat_charges": vat_charges,
+                "accessories": accessories,
+                "year": year
+            }
+        except Exception as e:
+            # Silently skip incomplete or malformed diagnostic sheets
+            continue
+            
+    return catalog
+
+# Load the catalog dataset
+EXCEL_FILE = "NFC New VRI Project (2).xlsx"
+VEHICLE_CATALOG = load_all_vehicle_data(EXCEL_FILE)
+
+# ------------------------------------------------------------------
+# INTERFACE & USER SELECTION INTERACTION LAYER
+# ------------------------------------------------------------------
+st.title("Mitsubishi Financial Matrix Calculator")
+
+if not VEHICLE_CATALOG:
+    st.error(f"Could not find or load '{EXCEL_FILE}' in your repository directory. Please verify your filename match.")
+else:
+    # 1. Selection Tier
+    sorted_options = sorted(list(VEHICLE_CATALOG.keys()))
+    selected_variant = st.selectbox("Select Vehicle Model Variant:", sorted_options)
+    
+    # Retrieve pre-parsed structural data points
+    v_data = VEHICLE_CATALOG[selected_variant]
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Vehicle Pricing Configuration")
+        base_vehicle_price = st.number_input("Base Vehicle Price (AED):", value=v_data["base_price"], step=500.0)
+        bank_rate = st.number_input("Flat Bank Interest Rate (Flat):", value=v_data["interest_rate"], format="%.4f", step=0.0001)
         
-        tenure_matrix.append({
-            "Tenure Loop": f"{years} Year(s) ({months} Mos)",
-            "Standard EMI (AED)": f"{standard_emi:,.2f}",
-            "Subvention Offer EMI (AED)": f"{subvention_emi:,.2f}",
-            "Monthly Savings (AED)": f"{monthly_savings:,.2f}",
-            "Total Plan Interest (AED)": f"{total_interest:,.2f}"
+        # Down Payment Control
+        down_payment_pct = st.slider("Down Payment Percentage (%):", 0, 100, 20) / 100.0
+        calculated_downpayment = base_vehicle_price * down_payment_pct
+        st.info(f"Calculated Down Payment: {calculated_downpayment:,.2f} AED")
+
+    with col2:
+        st.subheader("Add-ons & Accessories")
+        selected_addons_total = 0.0
+        
+        # Dynamically build checkbox UI entries from what was found inside the Excel sheets
+        for addon_name, info in v_data["accessories"].items():
+            is_checked = st.checkbox(
+                f"{addon_name} (+{info['price']:,.2f} AED)", 
+                value=info["default_checked"]
+            )
+            if is_checked:
+                selected_addons_total += info["price"]
+                
+    # ------------------------------------------------------------------
+    # LOAN CALCULATION MATRIX ENGINE
+    # ------------------------------------------------------------------
+    st.markdown("---")
+    st.subheader("Financing Monthly Options Execution")
+    
+    # Financial Formula Math Tiers
+    total_financed_amount = (base_vehicle_price + selected_addons_total) - calculated_downpayment
+    
+    tenures = [2, 3, 4, 5]
+    emi_results = []
+    
+    for years in tenures:
+        months = years * 12
+        # Simple Flat Rate Pricing Model Rule
+        total_interest = total_financed_amount * bank_rate * years
+        total_repayable = total_financed_amount + total_interest
+        monthly_emi = total_repayable / months
+        
+        emi_results.append({
+            "Tenure Period": f"{years} Years ({months} Months)",
+            "Financed Principal (AED)": f"{total_financed_amount:,.2f}",
+            "Total Interest (AED)": f"{total_interest:,.2f}",
+            "Estimated Monthly EMI (AED)": f"{monthly_emi:,.2f}"
         })
         
-    return {
-        "summary": {
-            "base_price": base_price,
-            "vat_amount": vat_amount,
-            "vehicle_with_vat": vehicle_with_vat,
-            "total_addons": total_addons,
-            "full_value": full_value,
-            "down_payment": down_payment,
-            "finance_amount": finance_amount
-        },
-        "matrix": pd.DataFrame(tenure_matrix)
-    }
-
-# --- 3. STREAMLIT FRONTEND USER INTERFACE ---
-st.title("🚗 Automotive Portfolio Finance Builder")
-st.markdown("Updated platform mapped directly to the new MY-2025 and MY-2026 system sheets.")
-st.divider()
-
-# Left Parameters Control Panel
-st.sidebar.header("🛠️ Setup & Parameters")
-
-selected_model = st.sidebar.selectbox("Select Vehicle Model Variant", list(VEHICLE_CATALOG.keys()))
-model_meta = VEHICLE_CATALOG[selected_model]
-model_year = model_meta["year"]
-
-custom_price = st.sidebar.number_input(
-    "Base Vehicle Price (AED)", 
-    value=int(model_meta["base_price"]), 
-    step=500
-)
-
-st.sidebar.subheader("📦 Add-Ons & Contract Inclusions")
-active_addons = []
-available_addons = ADDONS_CATALOG[model_year]
-
-# UI loop rendering independent elements safely
-for idx, addon in enumerate(available_addons):
-    clean_key = f"chk_{model_year}_{idx}"
-    price_key = f"prc_{model_year}_{idx}"
-    
-    is_active = st.sidebar.checkbox(addon['name'], value=addon['checked'], key=clean_key)
-    custom_addon_price = st.sidebar.number_input(
-        f"└ Price (AED)", 
-        value=float(addon['default_price']), 
-        step=50.0, 
-        key=price_key
-    )
-    if is_active:
-        active_addons.append({"name": addon['name'], "price": custom_addon_price})
-
-down_payment_pct = st.sidebar.slider("Down Payment Allocation (%)", min_value=10, max_value=80, value=20, step=5)
-
-# Engine Execution
-deal = calculate_deal_metrics(custom_price, model_year, active_addons, down_payment_pct)
-s = deal["summary"]
-
-# Content Grid Layout Display
-col1, col2 = st.columns([1, 1.6])
-
-with col1:
-    st.subheader("📊 Transaction Value Stack")
-    
-    # Cleaned: Removed all formatting markdown text wrappers that confuse pandas formatting engines
-    summary_data = {
-        "Financial Component": [
-            "Base Vehicle Price", 
-            "Vehicle VAT (5%)",
-            "Vehicle Price (Inc. VAT)",
-            "Total Add-Ons / Contracts", 
-            "Full Capitalized Asset Value", 
-            f"Down Payment Required ({down_payment_pct}%)", 
-            "Total Capital Financed Pool"
-        ],
-        "Value (AED)": [
-            f"{s['base_price']:,.2f}",
-            f"{s['vat_amount']:,.2f}",
-            f"{s['vehicle_with_vat']:,.2f}",
-            f"{s['total_addons']:,.2f}",
-            f"{s['full_value']:,.2f}",
-            f"{s['down_payment']:,.2f}",
-            f"{s['finance_amount']:,.2f}"
-        ]
-    }
-    st.table(pd.DataFrame(summary_data))
-
-with col2:
-    st.subheader("📉 Amortization Matrix Grid")
-    st.markdown("Tenure mapping factoring updated baseline interest and promotional subventions:")
-    st.dataframe(deal["matrix"], use_container_width=True, hide_index=True)
-    
-    st.success(f"💡 **Subvention Notice:** 1-Year terms evaluate with zero promotional multiplier tiers, while 2-5 year timelines calculate promotional subvention deductions automatically.")
+    st.table(pd.DataFrame(emi_results))
