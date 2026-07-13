@@ -189,7 +189,7 @@ else:
         # Pull RMC options dynamically if the file is present
         rmc_cost = 0.0
         if RMC_RULES and selected_code in RMC_RULES:
-            st.write("**Regional Maintenance Contracts (RMC)**")
+            st.write("**Routine Maintenance Contracts (RMC)**")
             rmc_packages = ["None"] + list(RMC_RULES[selected_code].keys())
             chosen_rmc = st.selectbox("Select Service Tier:", rmc_packages)
             if chosen_rmc != "None":
@@ -212,7 +212,7 @@ else:
     st.markdown("---")
     
     # Calculate overall aggregate
-    total_financed_amount = (base_vehicle_price + selected_addons_total + rmc_cost) - calculated_downpayment
+    total_financed_amount = (base_vehicle_price + selected_addons_total + rmc_cost+vat) - calculated_downpayment
     
     tenures = [2, 3, 4, 5]
     emi_results = []
