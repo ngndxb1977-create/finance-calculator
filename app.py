@@ -53,6 +53,17 @@ st.markdown(
         font-weight: 600 !important;
         font-size: 1.2rem !important;
     }
+    /* Fix Oversized Summary Metrics & Prevent Text Truncation */
+    [data-testid="stMetricValue"] {
+        font-family: 'Amethysta', serif !important;
+        font-size: 1.5rem !important; /* Reduces number size to a crisp, standard UX scale */
+        font-weight: 400 !important;
+    }
+    [data-testid="stMetricLabel"] {
+        font-family: 'Quicksand', sans-serif !important;
+        font-size: 0.95rem !important;
+        color: #555555 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
