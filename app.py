@@ -180,7 +180,7 @@ else:
         base_vehicle_price = st.number_input("Base Price (AED):", value=v_data["base_price"], step=500.0)
         
         down_payment_pct = st.slider("Down Payment Percentage (%):", 0, 100, 20) / 100.0
-        calculated_downpayment = base_vehicle_price * down_payment_pct
+        calculated_downpayment = base_vehicle_price+insurance+vri+accessories * down_payment_pct
         st.write(f"**Down Payment Realized:** {calculated_downpayment:,.2f} AED")
         
         st.markdown("---")
