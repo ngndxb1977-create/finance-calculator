@@ -179,8 +179,30 @@ else:
         st.header("⚙️ Adjustment Matrix")
         base_vehicle_price = st.number_input("Base Price (AED):", value=v_data["base_price"], step=500.0)
         
-        down_payment_pct = st.slider("Down Payment Percentage (%):", 0, 100, 20) / 100.0
-        calculated_downpayment = base_vehicle_price * down_payment_pct
+        # Calculate VAT
+vat = base_price * 0.05
+
+# Calculate accessories total
+accessories_total = (
+    ceramic_coating +
+    extended_warranty +
+    service_contract +
+    insurance +
+    vri
+)
+
+# Total vehicle value including everything
+total_vehicle_value = (
+    base_price +
+    vat +
+    accessories_total
+)
+
+# Correct down payment calculation
+down_payment_amount = total_vehicle_value * (down_payment_percentage / 100)
+
+# Correct loan principal
+loan_amount = total_vehicle_value - down_payment_amount
         st.write(f"**Down Payment Realized:** {calculated_downpayment:,.2f} AED")
         
         st.markdown("---")
