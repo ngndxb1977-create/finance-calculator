@@ -4,7 +4,58 @@ import numpy as np
 import os
 import io
 
-st.set_page_config(page_title="Mitsubishi Finance Calculator", layout="wide")
+st.set_page_config(page_title="Mitsubishi Financial Matrix Calculator", layout="wide")
+
+# ==========================================
+# CUSTOM UX/UI STYLING ENGINE
+# ==========================================
+st.markdown(
+    """
+    <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Karma:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,400&family=Quicksand:wght@500;700&display=swap');
+
+    /* Anthropic Style Background & Global Font Settings */
+    .stApp {
+        background-color: #FBF9F6 !important; /* Signature Anthropic warm light clay background */
+        color: #191919 !important;
+        font-family: 'Karma', serif !important;
+        font-size: 16px !important; /* UX Standard Body Font Size */
+        line-height: 1.6 !important;
+    }
+
+    /* Primary Headings (H1) - Quicksand */
+    h1, [data-testid="stHeader"] {
+        font-family: 'Quicksand', sans-serif !important;
+        font-weight: 700 !important;
+        font-size: 2.25rem !important; /* Balanced UX header scale */
+        color: #191919 !important;
+        letter-spacing: -0.02em;
+    }
+
+    /* Smaller Headings (H2, H3) - Playfair Display */
+    h2, h3, h4, h5, h6 {
+        font-family: 'Playfair Display', serif !important;
+        font-weight: 600 !important;
+        font-size: 1.5rem !important; /* UX Subheading scale */
+        color: #383838 !important;
+        margin-top: 1.5rem !important;
+    }
+
+    /* Sidebar Styling Alignment */
+    [data-testid="stSidebar"] {
+        background-color: #F4F0EA !important; /* Slightly darker warm tint for sidebar depth */
+    }
+    
+    [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        font-family: 'Quicksand', sans-serif !important; /* Sidebar labels stay clean and geometric */
+        font-weight: 600 !important;
+        font-size: 1.2rem !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Helper function to extract a clean parent model name
 def get_clean_model_name(raw_name):
