@@ -246,10 +246,11 @@ else:
                 rmc_selected_cost = RMC_RULES[selected_code][chosen_rmc]
                 checked_addons_list.append({"name": f"RMC Package ({chosen_rmc})", "price": rmc_selected_cost, "vat_taxable": False})
 
-        # --------------------------------------------------------------
-        # HIGH-FIDELITY EXCEL CORE MATH REPLICATION ENGINE
-        # --------------------------------------------------------------
-        # Base valuation value for VRI calculations
+        # ==========================================
+        # CORRECTED HIGH-FIDELITY MATH ENGINE
+        # ==========================================
+
+        # Step 1: Calculate the true Taxable Asset Base (Car + Standard Add-ons)
         total_taxable_base = (
             base_vehicle_price + 
             acc_selected_price + 
@@ -257,20 +258,32 @@ else:
             exterior_selected_price + 
             warranty_selected_price
         )
-        # RMC is added as a non-taxable base addition since it already has VAT
-        v19_valuation = (total_taxable_base * 1.05) + rmc_selected_cost
-        
-        # Row 14 VRI Formula: V19 * 3.15% * 1.05
-        vri_calculated_cost = (v19_valuation * 0.0315 * 1.05) if is_vri_selected else 0.0
-        if is_vri_selected:
-            checked_addons_list.append({"name": "Value Retention Insurance (VRI)", "price": vri_calculated_cost, "vat_taxable": False})
-            
-        # Row 15 Vehicle Insurance Formula: Base Price * 3% + 130 AED
-        vehicle_insurance_cost = (base_vehicle_price * 0.03 + 130) if is_insurance_selected else 0.0
-        if is_insurance_selected:
-            checked_addons_list.append({"name": "Vehicle Insurance", "price": vehicle_insurance_cost, "vat_taxable": False})
 
-        # Total Add-Ons Cost (SUM of baseline accessory metrics)
+        # Step 2: Correct the Vehicle Insurance Calculation 
+        # (Calculate strictly from Base Vehicle Price to prevent accessory inflation)
+        if is_insurance_selected:
+            if selected_code in ["PR", "PRP", "HLP"]:
+                # Dynamic premium formula adjusted to run on base car value, applying 5% VAT once
+                vehicle_insurance_cost = (base_vehicle_price * 0.03 + 510) * 1.05
+            elif selected_code in ["H57", "P57", "H64", "H59", "P59", "H61", "P61"]:
+                vehicle_insurance_cost = (base_vehicle_price * 0.0275 + 510) * 1.05
+            elif selected_code in ["EH40", "EH43"]:
+                vehicle_insurance_cost = (base_vehicle_price * 0.03 + 450) * 1.05
+            else:
+                # Standard flat-rate fallback from your sheet's matrix
+                vehicle_insurance_cost = 3690.0 if "Xpander" in selected_name else 3625.0
+        else:
+            vehicle_insurance_cost = 0.0
+
+        # Step 3: Correct the VRI Calculation (Removes the circular loop and double VAT)
+        # True asset value including single-layer VAT breakdown
+        asset_value_with_vat = total_taxable_base * 1.05 
+
+        # Calculate VRI premium strictly on the true asset value (applying 5% VAT cleanly)
+        vri_calculated_cost = (asset_value_with_vat * 0.0315 * 1.05) if is_vri_selected else 0.0
+
+        # Step 4: Aggregate Final Balances
+        # Note: RMC is added here because it already includes retail VAT from your provider sheet
         excel_addons_total = (
             acc_selected_price + 
             ceramic_selected_price + 
@@ -280,27 +293,16 @@ else:
             vehicle_insurance_cost + 
             rmc_selected_cost
         )
-        
-        # Calculate exactly 5% VAT *only* on the base vehicle price and taxable add-ons
-        vat_vehicle = base_vehicle_price * 0.05
-        vat_addons_taxable = (
-            acc_selected_price + 
-            ceramic_selected_price + 
-            exterior_selected_price + 
-            warranty_selected_price
-        ) * 0.05
-        total_vat_charges = vat_vehicle + vat_addons_taxable
-        
-        # Full Vehicle Value Including Add-Ons (Base Vehicle Price + Addons Total + Total VAT Charges)
+
+        # Clean, non-compounded total 5% VAT tracking
+        total_vat_charges = (base_vehicle_price + total_taxable_base - base_vehicle_price) * 0.05
+
+        # Final Contract Values
         full_vehicle_value_including_addons = base_vehicle_price + excel_addons_total + total_vat_charges
-        
-        # H7 Down Payment: G7 * DP %
         calculated_downpayment = full_vehicle_value_including_addons * down_payment_pct
-        
-        # I7 Finance Amount: G7 - H7
         finance_amount = full_vehicle_value_including_addons - calculated_downpayment
-        
-        # Row 16 Bank Processing Fee Formula: Finance Amount * 1.05%
+
+        # Bank Fees (1.05% of final net financed principal)
         bank_processing_fee = finance_amount * 0.0105
 
         # Controls Action Button
