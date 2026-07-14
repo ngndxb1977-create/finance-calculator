@@ -145,7 +145,7 @@ def load_all_vehicle_data(vehicle_file_path):
 # ------------------------------------------------------------------
 # CONFIG & FILE TARGETS
 # ------------------------------------------------------------------
-FILE_VEHICLES = "NFC New VRI Project (2).xlsx"
+FILE_VEHICLES = "NFC New VRI Project Separated Tabs.xlsx"
 FILE_SUPPLEMENT = "Bank & RMC Details.xlsx"
 
 VEHICLE_CATALOG = load_all_vehicle_data(FILE_VEHICLES)
@@ -210,31 +210,69 @@ else:
         is_vri_selected = False
         is_insurance_selected = False
         
+        # We need a quick pass to parse standard accessories to establish the U19 Base for dynamic checkbox pricing
+        temp_acc_price = 0.0
+        temp_ceramic_price = 0.0
+        temp_exterior_price = 0.0
+        temp_warranty_price = 0.0
+        temp_rmc_price = 0.0
+
+        for name, info in v_data["accessories"].items():
+            if info["type_tag"] == "STANDARD":
+                if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
+                    temp_ceramic_price = info["price_raw"]
+                elif "EXTERIOR" in name.upper() or "SCOTCH" in name.upper():
+                    temp_exterior_price = info["price_raw"]
+                elif "WARRANTY" in name.upper():
+                    temp_warranty_price = info["price_raw"]
+                else:
+                    temp_acc_price = info["price_raw"]
+            elif info["type_tag"] == "RMC" and not override_rmc_active:
+                temp_rmc_price = info["price_raw"]
+
+        # Formulate dynamic U19 reference base to calculate real-time label values
+        temp_u19 = (base_vehicle_price + temp_acc_price + temp_ceramic_price + temp_exterior_price + temp_warranty_price + temp_rmc_price) * 1.05
+
+        # Render checkboxes with matched calculated prices instead of raw template prices
         for name, info in v_data["accessories"].items():
             if info["type_tag"] == "RMC" and override_rmc_active:
                 continue
-                
-            checked = st.checkbox(f"{name} (+{info['price_raw']:,.2f} AED)", value=info["default_checked"])
+            
+            # Determine dynamic checkbox label cost
+            if info["type_tag"] == "VRI":
+                display_price = temp_u19 * 3.15 * 1.05 / 100
+            elif info["type_tag"] == "INSURANCE":
+                if selected_code in ["PR", "PRP", "HLP"]:
+                    display_price = (temp_u19 * 0.03 + 510) * 1.05
+                elif selected_code in ["H57", "P57", "H64", "H59", "P59", "H61", "P61"]:
+                    display_price = (temp_u19 * 0.0275 + 510) * 1.05
+                elif selected_code in ["EH40", "EH43"]:
+                    display_price = (temp_u19 * 0.03 + 450) * 1.05
+                else:
+                    display_price = 3690.0 if "Xpander" in selected_name else 3625.0
+            else:
+                display_price = info["price_raw"]
+
+            checked = st.checkbox(f"{name} (+{display_price:,.2f} AED)", value=info["default_checked"])
             
             if checked:
-                p = info["price_raw"]
                 if info["type_tag"] == "STANDARD":
                     if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
-                        ceramic_selected_price = p
+                        ceramic_selected_price = display_price
                     elif "EXTERIOR" in name.upper() or "SCOTCH" in name.upper():
-                        exterior_selected_price = p
+                        exterior_selected_price = display_price
                     elif "WARRANTY" in name.upper():
-                        warranty_selected_price = p
+                        warranty_selected_price = display_price
                     else:
-                        acc_selected_price = p
-                    checked_addons_list.append({"name": name, "price": p, "vat_taxable": True})
+                        acc_selected_price = display_price
+                    checked_addons_list.append({"name": name, "price": display_price, "vat_taxable": True})
                 elif info["type_tag"] == "VRI":
                     is_vri_selected = True
                 elif info["type_tag"] == "INSURANCE":
                     is_insurance_selected = True
                 elif info["type_tag"] == "RMC":
-                    rmc_selected_cost = p
-                    checked_addons_list.append({"name": name, "price": p, "vat_taxable": False})
+                    rmc_selected_cost = display_price
+                    checked_addons_list.append({"name": name, "price": display_price, "vat_taxable": False})
                     
         # Render dynamic drop-down selection only if active
         if override_rmc_active:
@@ -248,7 +286,6 @@ else:
         # HIGH-FIDELITY EXCEL MATCHING MATH ENGINE (U19-BASED)
         # ==========================================
         # Step 1: Replicate the dynamic U19/V19 total asset valuation formula from the sheet
-        # Formula: =(B7 + D10 + D11 + D12 + D13 + D16) * 1.05
         u19_valuation_base = (
             base_vehicle_price + 
             acc_selected_price + 
@@ -272,7 +309,6 @@ else:
             vehicle_insurance_cost = 0.0
 
         # Step 3: Calculate VRI premium directly using the U19 base value
-        # Formula: =IF(C14="YES", U19 * 3.15 * 1.05 / 100, 0)
         vri_calculated_cost = (u19_valuation_base * 3.15 * 1.05 / 100) if is_vri_selected else 0.0
 
         # Inject Insurance and VRI into checked_addons_list for reporting visibility
@@ -292,7 +328,7 @@ else:
             rmc_selected_cost
         )
 
-        # Total 5% VAT tracking for base items
+        # Total 5% VAT tracking for standard taxable accessories
         total_vat_charges = (base_vehicle_price + acc_selected_price + ceramic_selected_price + exterior_selected_price + warranty_selected_price) * 0.05
 
         # Final Contract Values
@@ -302,7 +338,7 @@ else:
 
         # Bank Fees (1.05% of final net financed principal)
         bank_processing_fee = finance_amount * 0.0105
-        
+
         # Controls Action Button
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("📊 Generate Complete Summary Report", use_container_width=True):
@@ -324,7 +360,7 @@ else:
         st.header("1. Summary Section")
         col_s1, col_s2, col_s3, col_s4 = st.columns(4)
         col_s1.metric("Vehicle Model", f"{selected_name} ({selected_code})")
-        col_s2.metric("Total Vehicle Value", f"{base_vehicle_price:,.2f} AED")
+        col_s2.metric("Total Vehicle Value", f"{full_vehicle_value_including_addons:,.2f} AED") # Fixed: Now shows full value including accessories/insurance/VAT
         col_s3.metric("Down Payment Amount", f"{calculated_downpayment:,.2f} AED")
         col_s4.metric("Finance Amount", f"{finance_amount:,.2f} AED")
         st.markdown("---")
