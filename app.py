@@ -64,6 +64,19 @@ st.markdown(
         font-size: 0.95rem !important;
         color: #555555 !important;
     }
+    /* Complete clamping for the top summary metrics */
+    [data-testid="stMetricValue"] {
+        font-family: 'Amethysta', serif !important;
+        font-size: 1.6rem !important; /* Professional UX layout balance */
+        font-weight: 400 !important;
+        color: #191919 !important;
+    }
+    [data-testid="stMetricLabel"], [data-testid="stMetricLabel"] p {
+        font-family: 'Quicksand', sans-serif !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #555555 !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
