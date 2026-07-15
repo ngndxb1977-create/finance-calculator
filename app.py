@@ -546,9 +546,24 @@ else:
             with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
                 pd.DataFrame(emi_results).to_excel(writer, index=False, sheet_name="EMI Matrix")
             st.download_button(
-                label="💾 Save as Excel / PDF Document",
+                label="💾 Save as Excel Spreadsheet",  # <-- Renamed to be accurate
                 data=buffer.getvalue(),
                 file_name=f"{selected_name.replace(' ', '_')}_Summary.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
+
+        # Direct, user-friendly browser PDF instructions
+        st.markdown(
+            """
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <span style="font-family: 'Quicksand', sans-serif; font-size: 0.85rem; color: #777777;">
+                    💡 <b>Tip:</b> To save this complete report as a clean <b>PDF Document</b>, simply press 
+                    <kbd style="background-color: #EAEAEA; padding: 2px 5px; border-radius: 3px;">Ctrl + P</kbd> 
+                    (or <kbd style="background-color: #EAEAEA; padding: 2px 5px; border-radius: 3px;">Cmd + P</kbd> on Mac) 
+                    and select <b>"Save as PDF"</b> as your printer destination.
+                </span>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
