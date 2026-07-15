@@ -443,7 +443,7 @@ else:
         st.subheader(f"Unit Selected: {selected_name} — Variant {selected_code} ({selected_year})")
         st.markdown("---")
 
-        # Top Summary Metrics
+        # Top Summary Metrics (Fee Splits section removed from here)
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Total Vehicle Value", f"{full_vehicle_value_including_addons:,.2f} AED")
@@ -453,13 +453,6 @@ else:
             st.metric("Total Cash Outlay", f"{total_cash_outlay:,.2f} AED")
         with col4:
             st.metric("Financed Amount", f"{finance_amount:,.2f} AED")
-
-        st.markdown("### 💵 Fees & Processing Splits")
-        col_fee1, col_fee2 = st.columns(2)
-        with col_fee1:
-            st.metric("DP Processing Fee (DP PF)", f"{dp_processing_fee:,.2f} AED")
-        with col_fee2:
-            st.metric("Bank Processing Fee (Bank PF)", f"{bank_processing_fee:,.2f} AED")
 
         # SECTION 1: SUMMARY SECTION
         st.header("1. Summary Section")
@@ -517,11 +510,10 @@ else:
         # SECTION 4: TOTAL CASH OUTLAY REQUIRED
         st.header("4. Total Cash Outlay")
         registration_fee = v_data["registration_fee"]
-        processing_fee_dp = v_data["processing_fee_dp"]
         total_insurance_and_vri = vehicle_insurance_cost + vri_calculated_cost
         
-        # Grand total required to take the car
-        grand_total_cash_outlay = calculated_downpayment + registration_fee + processing_fee_dp + bank_processing_fee
+        # Grand total required to take the car (aligned using the dynamic split variable dp_processing_fee)
+        grand_total_cash_outlay = calculated_downpayment + registration_fee + dp_processing_fee + bank_processing_fee
         
         col_out1, col_out2 = st.columns(2)
         with col_out1:
@@ -529,7 +521,8 @@ else:
             st.write(f"**Accessories Total (Gross):** {total_display_addons_price:,.2f} AED")
         with col_out2:
             st.write(f"**Insurance Costs (Vehicle + VRI):** {total_insurance_and_vri:,.2f} AED")
-            st.write(f"**Processing Fees (DP PF + Bank PF):** {(processing_fee_dp + bank_processing_fee):,.2f} AED")
+            st.write(f"**DP Processing Fee (DP PF):** {dp_processing_fee:,.2f} AED")
+            st.write(f"**Bank Processing Fee (Bank PF):** {bank_processing_fee:,.2f} AED")
             
         st.markdown(f"### 🔑 **Grand Total Required to Take the Car:** {grand_total_cash_outlay:,.2f} AED")
         st.markdown("---")
