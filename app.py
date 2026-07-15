@@ -443,17 +443,6 @@ else:
         st.subheader(f"Unit Selected: {selected_name} — Variant {selected_code} ({selected_year})")
         st.markdown("---")
 
-        # Top Summary Metrics (Fee Splits section removed from here)
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.metric("Total Vehicle Value", f"{full_vehicle_value_including_addons:,.2f} AED")
-        with col2:
-            st.metric("Down Payment (DP)", f"{calculated_downpayment:,.2f} AED")
-        with col3:
-            st.metric("Total Cash Outlay", f"{total_cash_outlay:,.2f} AED")
-        with col4:
-            st.metric("Financed Amount", f"{finance_amount:,.2f} AED")
-
         # SECTION 1: SUMMARY SECTION
         st.header("1. Summary Section")
         col_s1, col_s2, col_s3, col_s4 = st.columns(4)
