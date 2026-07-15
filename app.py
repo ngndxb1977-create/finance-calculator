@@ -513,7 +513,7 @@ else:
             st.write(f"**Bank Processing Fee (Bank PF):** {bank_processing_fee:,.2f} AED")
             
         st.markdown(f"### 🔑 **Grand Total Required to Take the Car:** {grand_total_cash_outlay:,.2f} AED")
-        st.markdown("---")
+        st.markdown("<br><br>", unsafe_allow_html=True)
 
         # SECTION 5: BUTTONS
         # Center-aligned Action Buttons
