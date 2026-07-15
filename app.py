@@ -509,7 +509,6 @@ else:
             st.write(f"**Down Payment:** {calculated_downpayment:,.2f} AED")
             st.write(f"**Accessories Total (Gross):** {total_display_addons_price:,.2f} AED")
         with col_out2:
-            st.write(f"**Insurance Costs (Vehicle + VRI):** {total_insurance_and_vri:,.2f} AED")
             st.write(f"**DP Processing Fee (DP PF):** {dp_processing_fee:,.2f} AED")
             st.write(f"**Bank Processing Fee (Bank PF):** {bank_processing_fee:,.2f} AED")
             
