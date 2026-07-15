@@ -512,7 +512,25 @@ else:
             st.write(f"**DP Processing Fee (DP PF):** {dp_processing_fee:,.2f} AED")
             st.write(f"**Bank Processing Fee (Bank PF):** {bank_processing_fee:,.2f} AED")
             
-        st.markdown(f"### 🔑 **Grand Total Required to Take the Car:** {grand_total_cash_outlay:,.2f} AED")
+        st.markdown(
+            f"""
+            <div style="
+                background-color: #F4F0EA; 
+                padding: 1.25rem 1.5rem; 
+                border-radius: 8px; 
+                border-left: 4px solid #191919;
+                margin-top: 1.5rem;
+            ">
+                <span style="font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 0.9rem; color: #555555; display: block; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                    🔑 Grand Total Required to Take the Car
+                </span>
+                <span style="font-family: 'Amethysta', serif; font-size: 1.8rem; color: #191919;">
+                    {grand_total_cash_outlay:,.2f} <span style="font-size: 1.2rem;">AED</span>
+                </span>
+            </div>
+            """, 
+            unsafe_allow_html=True
+        )
         st.markdown("<br><br>", unsafe_allow_html=True)
 
         # SECTION 5: BUTTONS
