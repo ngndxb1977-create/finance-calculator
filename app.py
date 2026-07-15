@@ -428,7 +428,7 @@ else:
         
         # Controls Action Button
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("📊 Generate Complete Summary Report", use_container_width=True):
+        if st.button("Generate Summary", use_container_width=True):
             st.session_state.view_state = "summary"
 
     # ------------------------------------------------------------------
