@@ -441,7 +441,7 @@ else:
         finance_amount = full_vehicle_value_including_addons - calculated_downpayment
 
         # Split Processing Fees
-        dp_processing_fee = 520.0  
+        dp_processing_fee = 315.0  
         bank_processing_fee = finance_amount * 0.0105
 
         # Calculate Cash Outlay EXCLUDING Insurance Costs
