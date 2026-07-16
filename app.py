@@ -414,6 +414,18 @@ else:
         else:
             vehicle_insurance_cost = 0.0
         
+        # --- END OF VRI & INSURANCE CALCULATION SECTION ---
+
+with st.sidebar:
+    st.markdown("---")
+    st.subheader("📊 Report-Matched Values")
+
+    if is_vri_selected:
+        vri_cost = u19_valuation_base * 0.0315
+        st.write(f"**VRI:** {vri_cost:,.2f} AED")
+
+    if is_insurance_selected:
+        st.write(f"**Insurance:** {vehicle_insurance_cost:,.2f} AED")
 
         # Step 3: Calculate VRI premium directly using the dynamic U19 base value
         vri_calculated_cost = (u19_valuation_base * 3.15 * 1.05 / 100) if is_vri_selected else 0.0
