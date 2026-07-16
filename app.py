@@ -470,7 +470,7 @@ else:
 
         # SECTION 2: EMI BREAKDOWN
         st.header("2. EMI Breakdown")
-        tenures = [2, 3, 4, 5]
+        tenures = [1, 2, 3, 4, 5]
         emi_results = []
         
         for years in tenures:
