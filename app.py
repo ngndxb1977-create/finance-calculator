@@ -230,6 +230,31 @@ BANK_RULES, RMC_RULES = load_supplementary_data(FILE_SUPPLEMENT)
 if "view_state" not in st.session_state:
     st.session_state.view_state = "input"
 
+# ---------------------------------------------------------
+# Unified VRI & Insurance Calculation (used by sidebar + report)
+# ---------------------------------------------------------
+
+# --- VRI ---
+vri_amount = temp_u19 * 3.15 * 1.05 / 100
+
+# --- Insurance ---
+if selected_code in ["PR", "PRP", "HLP","G08", "G03", "G05", "G06", "G09", "G10", "G12",
+                     "P03", "P05", "P06", "P08", "P09", "P10", "P12", "G31"]:
+    insurance_amount = (temp_u19 * 0.03 + 510) * 1.05
+
+elif selected_code in ["H57", "P57", "H64", "H59", "P59", "H61", "P61"]:
+    insurance_amount = (temp_u19 * 0.0275 + 510) * 1.05
+
+elif selected_code in ["EH40", "EH43"]:
+    insurance_amount = (temp_u19 * 0.03 + 450) * 1.05
+
+else:
+    # Xpander / Destinator special rule
+    if "Xpander" in selected_name or "Destinator" in selected_name:
+        insurance_amount = 3690.0
+    else:
+        insurance_amount = 3625.0
+
 # ------------------------------------------------------------------
 # SIDEBAR - CONFIGURATION INTERFACE
 # ------------------------------------------------------------------
@@ -285,7 +310,10 @@ else:
         checked_addons_list = []
         is_vri_selected = False
         is_insurance_selected = False
-        
+
+        st.sidebar.metric("VRI Amount (AED)", round(vri_amount, 2))
+        st.sidebar.metric("Insurance Amount (AED)", round(insurance_amount, 2))
+
         # We need a quick pass to parse standard accessories to establish the U19 Base for dynamic checkbox pricing
         temp_acc_price = 0.0
         temp_ceramic_price = 0.0
