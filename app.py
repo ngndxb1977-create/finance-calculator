@@ -316,7 +316,6 @@ else:
     (temp_rmc_price / 1.05)
 ) * 1.05
 
-
         # Render checkboxes with matched calculated prices instead of raw template prices
         for name, info in v_data["accessories"].items():
             if info["type_tag"] == "RMC" and override_rmc_active:
