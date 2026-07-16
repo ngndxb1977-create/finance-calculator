@@ -318,7 +318,7 @@ else:
             if info["type_tag"] == "VRI":
                 display_price = temp_u19 * 3.15 * 1.05 / 100
             elif info["type_tag"] == "INSURANCE":
-                if selected_code in ["PR", "PRP", "HLP"]:
+                if selected_code in ["PR", "PRP", "HLP", "G03", "G05", "G06", "G08", "G09","G10", "G12", "P03", "P05", "P06", "P08","P09", "P10", "P12"]:
                     display_price = (temp_u19 * 0.03 + 510) * 1.05
                 elif selected_code in ["H57", "P57", "H64", "H59", "P59", "H61", "P61"]:
                     display_price = (temp_u19 * 0.0275 + 510) * 1.05
@@ -326,6 +326,7 @@ else:
                     display_price = (temp_u19 * 0.03 + 450) * 1.05
                 else:
                     display_price = 3690.0 if "Xpander" in selected_name else 3625.0
+                    display_price = 3690.0 if "Destinator" in selected_name else 3625.0
             else:
                 display_price = info["price_raw"]
 
