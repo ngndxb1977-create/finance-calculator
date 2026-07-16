@@ -307,7 +307,15 @@ else:
                 temp_rmc_price = info["price_raw"]
 
         # Formulate dynamic U19 reference base to calculate real-time label values
-        temp_u19 = (base_vehicle_price + temp_acc_price + temp_ceramic_price + temp_exterior_price + temp_warranty_price + temp_rmc_price) * 1.05
+        temp_u19 = (
+    base_vehicle_price +
+    temp_acc_price +
+    temp_ceramic_price +
+    temp_exterior_price +
+    temp_warranty_price +
+    (temp_rmc_price / 1.05)
+) * 1.05
+
 
         # Render checkboxes with matched calculated prices instead of raw template prices
         for name, info in v_data["accessories"].items():
