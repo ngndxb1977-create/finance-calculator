@@ -285,11 +285,8 @@ else:
         checked_addons_list = []
         is_vri_selected = False
         is_insurance_selected = False
-
-               st.write(f"Vehicle Insurance: AED {insurance_amount:,.2f}")
-        st.write(f"VRI Amount: AED {vri_amount:,.2f}")
-
-        # We need a quick pass to parse standard accessories...
+        
+        # We need a quick pass to parse standard accessories to establish the U19 Base for dynamic checkbox pricing
         temp_acc_price = 0.0
         temp_ceramic_price = 0.0
         temp_exterior_price = 0.0
@@ -297,7 +294,6 @@ else:
         temp_rmc_price = 0.0
 
         for name, info in v_data["accessories"].items():
-            ...
             if info["type_tag"] == "STANDARD":
                 if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                     temp_ceramic_price = info["price_raw"]
