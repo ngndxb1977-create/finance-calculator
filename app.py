@@ -388,7 +388,7 @@ else:
 
             # Group A: Starts with PR, HLP, or matches specific G-codes
             # Captures variants like PR, PRP, PRL, PRX, etc.
-            if code.startswith(('PR', 'HLP')) or code in ["G08", "G09", "G31"]:
+            if code.startswith(('PR', 'HLP')) or code in ["G03", "G05", "G06", "G08", "G09","G10", "G12", "P03", "P05", "P06", "P08","P09", "P10", "P12", "G31"]:
                 vehicle_insurance_cost = (u19_valuation_base * 0.03 + 510) * 1.05
 
             # Group B: Starts with H or P followed by 57, 59, 61, 62, 64
@@ -403,6 +403,7 @@ else:
             # Fallback Matrix (Flat-rate models)
             else:
                 vehicle_insurance_cost = 3690.0 if "Xpander" in name else 3625.0
+                vehicle_insurance_cost = 3690.0 if "Destinator" in name else 3625.0
         else:
             vehicle_insurance_cost = 0.0
         
