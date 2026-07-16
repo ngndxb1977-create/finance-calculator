@@ -313,7 +313,7 @@ else:
     temp_ceramic_price +
     temp_exterior_price +
     temp_warranty_price +
-    (temp_rmc_price / 1.05)
+    (rmc_selected_cost / 1.05)
 ) * 1.05
 
         # Render checkboxes with matched calculated prices instead of raw template prices
