@@ -286,7 +286,10 @@ else:
         is_vri_selected = False
         is_insurance_selected = False
 
-        t.write(f"Vehicle Insurance: AED {insurance_amount:,.2f}")
+       # --- Sidebar VRI & Insurance (use report-calculated values) ---
+        st.subheader("Insurance & VRI Summary")
+
+        st.write(f"Vehicle Insurance: AED {insurance_amount:,.2f}")
         st.write(f"VRI Amount: AED {vri_amount:,.2f}")
         
         # We need a quick pass to parse standard accessories to establish the U19 Base for dynamic checkbox pricing
