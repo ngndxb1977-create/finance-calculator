@@ -417,7 +417,7 @@ else:
 
         # Inject Insurance and VRI into checked_addons_list for reporting visibility
         if is_vri_selected:
-            checked_addons_list.append({"name": "Value Retention Insurance (VRI)", "price": vri_calculated_cost, "vat_taxable": False})
+            checked_addons_list.append({"name": "Value Replacement Insurance (VRI)", "price": vri_calculated_cost, "vat_taxable": False})
         if is_insurance_selected:
             checked_addons_list.append({"name": "Vehicle Insurance", "price": vehicle_insurance_cost, "vat_taxable": False})
 
