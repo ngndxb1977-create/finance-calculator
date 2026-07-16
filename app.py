@@ -367,6 +367,43 @@ else:
                 rmc_selected_cost = RMC_RULES[selected_code][chosen_rmc]
                 checked_addons_list.append({"name": f"Routine Maintenance Contract ({chosen_rmc})", "price": rmc_selected_cost, "vat_taxable": False})
 
+# ==========================================
+# MAIN ENGINE — FINAL U19, INSURANCE, VRI
+# ==========================================
+
+# Step 1: Calculate U19 dynamically based ONLY on selected accessories
+u19_valuation_base = (
+    base_vehicle_price +
+    acc_selected_price +
+    ceramic_selected_price +
+    exterior_selected_price +
+    warranty_selected_price +
+    (rmc_selected_cost / 1.05)
+) * 1.05
+
+# Step 2: Calculate Vehicle Insurance using the U19 base
+if is_insurance_selected:
+    code = str(selected_code).strip().upper()
+    name = str(selected_name)
+
+    if code.startswith(('PR', 'HLP')) or code in ["G03", "G05", "G06", "G08", "G09","G10", "G12", "P03", "P05", "P06", "P08","P09", "P10", "P12", "G31"]:
+        vehicle_insurance_cost = (u19_valuation_base * 0.03 + 510) * 1.05
+
+    elif code.startswith(('H', 'P')) and any(num in code for num in ["57", "59", "61", "62", "64"]):
+        vehicle_insurance_cost = (u19_valuation_base * 0.0275 + 510) * 1.05
+
+    elif code.startswith('EH') and any(num in code for num in ["40", "41", "43"]):
+        vehicle_insurance_cost = (u19_valuation_base * 0.03 + 450) * 1.05
+
+    else:
+        vehicle_insurance_cost = 3690.0 if "Xpander" in name else 3625.0
+        vehicle_insurance_cost = 3690.0 if "Destinator" in name else 3625.0
+else:
+    vehicle_insurance_cost = 0.0
+
+# Step 3: Calculate VRI premium using the U19 base
+vri_calculated_cost = (u19_valuation_base * 3.15 * 1.05 / 100) if is_vri_selected else 0.0
+
         # ==========================================
         # DYNAMIC EXCEL MATCHING MATH ENGINE (U19-DYNAMIC)
         # ==========================================
