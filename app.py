@@ -175,7 +175,7 @@ def load_all_vehicle_data(vehicle_file_path):
             # Map Row 10 to 16 Accessories
             accessories = {}
             row_labels = {
-                10: "Customer Accessories",
+                10: "Custom Accessories",
                 11: "Ceramic Gold Window Tint",
                 12: "FO PPF Gold Package",
                 13: "Extended Warranty",
@@ -295,6 +295,8 @@ else:
 
         for name, info in v_data["accessories"].items():
             if info["type_tag"] == "STANDARD":
+                if "CUSTOM" in name.upper() and "ACCESSORIES" in name.upper():
+                    temp_acc_price = info["price_raw"]
                 if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                     temp_ceramic_price = info["price_raw"]
                 elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
@@ -348,6 +350,8 @@ else:
             
             if checked:
                 if info["type_tag"] == "STANDARD":
+                    if "CUSTOM" in name.upper() and "ACCESSORIES" in name.upper():
+                        acc_selected_price = display_price
                     if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                         ceramic_selected_price = display_price
                     elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
