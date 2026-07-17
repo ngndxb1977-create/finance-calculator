@@ -45,7 +45,7 @@ st.markdown(
     }
     
    [data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
+   [data-testid="stSidebar"] h3 {
        font-family: 'Quicksand', sans-serif !important;
        font-weight: 600 !important;
        font-size: 1.2rem !important;
@@ -58,7 +58,7 @@ st.markdown(
        color: #191919 !important;
     }
    [data-testid="stMetricLabel"],
-[data-testid="stMetricLabel"] p {
+   [data-testid="stMetricLabel"] p {
        font-family: 'Quicksand', sans-serif !important;
        font-size: 0.95rem !important;
        font-weight: 600 !important;
@@ -545,7 +545,7 @@ else:
                <p class="disclaimer-text">*** This sheet is only communication between dealer and the customer, avoid discussing with bank personal.</p>
                
                <p style="margin-top: 1.25rem; font-weight: 600; font-size: 0.95rem; color: #191919;">
-                   📧 For Any Further Clarification On Finance Kindly Forward An Email: <a href="mailto:naveen@habtoormotors.com" style="color: #191919; font-weight:700;">naveen@habtoormotors.com</a> Or Reach Us On Boardline: <strong>04-608-4000</strong>
+                   Finance Clarifications: Kindly forward an email to <a href="mailto:naveen@habtoormotors.com" style="color: #191919; font-weight:700;">naveen@habtoormotors.com</a> or reach us on boardline: <strong>04-608-4000</strong>
                </p>
            </div>
            """,
