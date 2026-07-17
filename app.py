@@ -436,7 +436,7 @@ else:
         )
 
         # Total 5% VAT tracking for standard taxable accessories
-        total_vat_charges = (base_vehicle_price + acc_selected_price + ceramic_selected_price + ppfgoldpackage_selected_price + warranty_selected_price) * 0.05
+        total_vat_charges = (base_vehicle_price + acc_selected_price + ceramic_selected_price + foppfgoldpackage_selected_price + warranty_selected_price) * 0.05
 
         # Final Contract Values
         full_vehicle_value_including_addons = base_vehicle_price + excel_addons_total + total_vat_charges
