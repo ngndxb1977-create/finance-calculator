@@ -298,7 +298,7 @@ else:
                 if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                     temp_ceramic_price = info["price_raw"]
                 elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
-                    temp_exterior_price = info["price_raw"]
+                    temp_foppfgoldpackage_price = info["price_raw"]
                 elif "WARRANTY" in name.upper():
                     temp_warranty_price = info["price_raw"]
                 else:
@@ -339,8 +339,8 @@ else:
 
             # Intercept accessory text labels dynamically from Excel
             display_name = name
-            if "EXTERIOR" in name.upper() or "SCOTCH" in name.upper():
-                display_name = "FO Exterior Ceramic All Cars SCOTCHGUARD"
+            if "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
+                display_name = "FO PPF GOLD PACKAGE"
             elif name.strip().upper() == "ACCESSORY" or name.strip().upper() == "ACCESSORIES":
                 display_name = "Custom Accessories"
 
@@ -351,7 +351,7 @@ else:
                     if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                         ceramic_selected_price = display_price
                     elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
-                        exterior_selected_price = display_price
+                        foppfgoldpackage_selected_price = display_price
                     elif "WARRANTY" in name.upper():
                         warranty_selected_price = display_price
                     else:
