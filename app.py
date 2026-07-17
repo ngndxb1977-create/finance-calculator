@@ -266,6 +266,11 @@ else:
         bank_rate = st.number_input("Flat Interest Rate (ROI):", value=fetched_roi, format="%.4f", step=0.0001)
         
         st.markdown("---")
+        st.subheader("⚙️ Calculations Adjuster")
+        base_vehicle_price = st.number_input("Base Vehicle Price (AED):", value=v_data["base_price"], step=500.0)
+        down_payment_pct = st.slider("Down Payment Percentage (%):", 0, 100, 20) / 100.0
+
+        st.markdown("---")
         st.subheader("➕ Custom Accessories & Services Checklists")
         
         acc_selected_price = 0.0   
@@ -389,6 +394,7 @@ else:
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("Generate Summary", use_container_width=True):
             st.session_state.view_state = "summary"
+
     # ------------------------------------------------------------------
     # MAIN WORKSPACE RENDERING
     # ------------------------------------------------------------------
