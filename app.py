@@ -273,10 +273,10 @@ else:
         st.markdown("---")
         st.subheader("➕ Custom Accessories & Services Checklists")
         
-        acc_selected_price = 0.0   
-        ceramic_selected_price = 0.0 
-        exterior_selected_price = 0.0 
-        warranty_selected_price = 0.0 
+        acc_selected_price = st.checkbox("Accessories")    
+        ceramic_selected_price = st.checkbox("Ceramic Coating")
+        exterior_selected_price = st.checkbox("Exterior Protection")
+        warranty_selected_price = st.checkbox("Extended Warranty")
         rmc_selected_cost = 0.0     
         
         # Check if dynamic RMC catalog rules override standard inputs
