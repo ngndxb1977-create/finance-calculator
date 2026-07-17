@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 import io
+import re
 
 # Set configuration at the absolute top
 st.set_page_config(page_title="Mitsubishi Financial Matrix Calculator", layout="wide")
@@ -95,6 +96,16 @@ def get_clean_model_name(raw_name):
     elif 'DESTINATOR' in raw_name_upper: return 'Destinator'
     return raw_name
 
+# Normalization helper to clean up formatting variations in Salary Brackets (e.g. spaces, commas)
+def normalize_bracket_string(raw_val):
+    if not raw_val or pd.isna(raw_val):
+        return ""
+    # Clean spacing, commas, and normalize dashes
+    val = str(raw_val).strip().replace(",", "")
+    val = re.sub(r'\s+', '', val)  # strip all whitespace spaces
+    val = val.replace("to", "-").replace("—", "-").replace("–", "-")
+    return val
+
 # ------------------------------------------------------------------
 # MASTER EXCEL EXTRACTION ENGINE
 # ------------------------------------------------------------------
@@ -120,11 +131,21 @@ def load_supplementary_data(file_path):
                     roi_col = f"ROI.{i}" if i > 1 else "ROI"
                     
                     if sb_col in df_bank.columns and roi_col in df_bank.columns:
-                        sb_val = str(row[sb_col]).strip()
+                        raw_sb_val = row[sb_col]
                         roi_val = row[roi_col]
                         
-                        if sb_val and sb_val != "nan" and sb_val != "" and pd.notna(roi_val):
-                            bank_data[bank_name][sb_val] = float(roi_val)
+                        if pd.notna(raw_sb_val) and str(raw_sb_val).strip() != "" and pd.notna(roi_val):
+                            # Normalize the bracket label so formatting anomalies are resolved
+                            norm_sb_val = normalize_bracket_string(raw_sb_val)
+                            
+                            # Standardize display formatting of the bracket option to look clean in the selectbox
+                            if "-" in norm_sb_val:
+                                parts = norm_sb_val.split("-")
+                                display_label = f"{parts[0]}-{parts[1]}"
+                            else:
+                                display_label = norm_sb_val
+                                
+                            bank_data[bank_name][display_label] = float(roi_val)
         except Exception as e:
             pass
 
