@@ -325,9 +325,9 @@ else:
             if info["type_tag"] == "VRI":
                 display_price = temp_u19 * 3.15 * 1.05 / 100
             elif info["type_tag"] == "INSURANCE":
-                if selected_code in [“OTF03”, “OTP03”, “OTF06”, “OTP06”,  “OTP06-01”, “OTF08”, “OTP08”, "PR", "PRP", "HLP", "G03", "G05", "G06", "G08", "G09","G10", "G12", "P03", "P05", "P06", "P08","P09", "P10", "P12"]:
+                if selected_code in [["OTF03", "OTP03", "OTF06", "OTP06", "OTP06-01", "OTF08", "OTP08", "PR", "PRP", "HLP", "G03", "G05", "G06", "G08", "G09","G10", "G12", "P03", "P05", "P06", "P08","P09", "P10", "P12"]:
                     display_price = (temp_u19 * 0.03 + 510) * 1.05
-                elif selected_code in [“MOP57”, “MOG64”, “MOG59”, “MOG59P”, “MOG61”, “MOP61”, "H57", "P57", "H64", "H59", "P59", "H61", "P61"]:
+                elif selected_code in ["MOP57", "MOG64", "MOG59", "MOG59P", "MOG61", "MOP61", "H57", "P57", "H64", "H59", "P59", "H61", "P61"]:
                     display_price = (temp_u19 * 0.0275 + 510) * 1.05
                 elif selected_code in ["EH40", "EH43"]:
                     display_price = (temp_u19 * 0.03 + 450) * 1.05
@@ -395,7 +395,7 @@ else:
 
             # Group A: Starts with PR, HLP, or matches specific G-codes
             # Captures variants like PR, PRP, PRL, PRX, etc.
-            if code.startswith(('PR', 'HLP')) or code in [“OTF03”, “OTP03”, “OTF06”, “OTP06”,  “OTP06-01”, “OTF08”, “OTP08”, "G03", "G05", "G06", "G08", "G09","G10", "G12", "P03", "P05", "P06", "P08","P09", "P10", "P12", "G31"]:
+            if code.startswith(('PR', 'HLP')) or code in ["OTF03", "OTP03", "OTF06", "OTP06", "OTP06-01", "OTF08", "OTP08", "G03", "G05", "G06", "G08", "G09","G10", "G12", "P03", "P05", "P06", "P08","P09", "P10", "P12", "G31"]:
                 vehicle_insurance_cost = (u19_valuation_base * 0.03 + 510) * 1.05
 
             # Group B: Starts with H or P followed by 57, 59, 61, 62, 64
