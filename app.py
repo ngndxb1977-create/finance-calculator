@@ -275,7 +275,7 @@ else:
         
         acc_selected_price = 0.0   
         ceramic_selected_price = 0.0 
-        ppfgold_selected_price = 0.0 
+        foppfgoldpackage_selected_price = 0.0 
         warranty_selected_price = 0.0 
         rmc_selected_cost = 0.0     
         
@@ -289,7 +289,7 @@ else:
         # We need a quick pass to parse standard accessories to establish the U19 Base for dynamic checkbox pricing
         temp_acc_price = 0.0
         temp_ceramic_price = 0.0
-        temp_ppfgold_price = 0.0
+        temp_foppfgoldpackage_price = 0.0
         temp_warranty_price = 0.0
         temp_rmc_price = 0.0
 
@@ -297,7 +297,7 @@ else:
             if info["type_tag"] == "STANDARD":
                 if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                     temp_ceramic_price = info["price_raw"]
-                elif "PPFGOLD" in name.upper() or "SCOTCH" in name.upper():
+                elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
                     temp_exterior_price = info["price_raw"]
                 elif "WARRANTY" in name.upper():
                     temp_warranty_price = info["price_raw"]
@@ -311,7 +311,7 @@ else:
     base_vehicle_price +
     temp_acc_price +
     temp_ceramic_price +
-    temp_ppfgold_price +
+    temp_foppfgoldpackage_price +
     temp_warranty_price +
     (rmc_selected_cost / 1.05)
 ) * 1.05
@@ -350,7 +350,7 @@ else:
                 if info["type_tag"] == "STANDARD":
                     if "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                         ceramic_selected_price = display_price
-                    elif "FO" in name.upper() or "PPFGOLD" in name.upper():
+                    elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
                         exterior_selected_price = display_price
                     elif "WARRANTY" in name.upper():
                         warranty_selected_price = display_price
@@ -381,7 +381,7 @@ else:
             base_vehicle_price + 
             acc_selected_price + 
             ceramic_selected_price + 
-            ppfgold_selected_price +  
+            foppfgoldpackage_selected_price +  
             warranty_selected_price + 
             (rmc_selected_cost / 1.05)
         ) * 1.05
@@ -428,7 +428,7 @@ else:
         excel_addons_total = (
             acc_selected_price + 
             ceramic_selected_price + 
-            ppfgold_selected_price + 
+            foppfgoldpackage_selected_price + 
             warranty_selected_price + 
             vri_calculated_cost + 
             vehicle_insurance_cost + 
