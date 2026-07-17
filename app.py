@@ -296,21 +296,27 @@ else:
         for name, info in v_data["accessories"].items():
             if info["type_tag"] == "STANDARD":
 
+                # Custom Accessories (ACCUMULATE)
                 if "CUSTOM" in name.upper() and "ACCESSORIES" in name.upper():
                     temp_acc_price += info["price_raw"]
 
+                # Ceramic
                 elif "CERAMIC" in name.upper() and "WINDOW" in name.upper():
                     temp_ceramic_price = info["price_raw"]
 
+                # FO PPF Gold Package
                 elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
                     temp_foppfgoldpackage_price = info["price_raw"]
 
+                # Extended Warranty
                 elif "WARRANTY" in name.upper():
                     temp_warranty_price = info["price_raw"]
 
+                # Any other standard accessory (ACCUMULATE)
                 else:
                     temp_acc_price += info["price_raw"]
 
+                # RMC must be OUTSIDE the STANDARD block
                 elif info["type_tag"] == "RMC" and not override_rmc_active:
                     temp_rmc_price = info["price_raw"]
 
