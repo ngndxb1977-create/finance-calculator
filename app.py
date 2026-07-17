@@ -114,54 +114,45 @@ def load_supplementary_data(file_path):
     bank_data = {}
     rmc_data = {}
     if os.path.exists(file_path):
-        # Parse Bank Details with an isolated, granular parsing structure
+        # Parse Bank Details with a strict positional column-pairing engine
         try:
             df_bank = pd.read_excel(file_path, sheet_name='Bank Details')
+            
             for _, row in df_bank.iterrows():
                 try:
-                    bank_name = str(row['Bank Name']).strip()
+                    bank_name = str(row.iloc[0]).strip() # Column A (Bank Name)
                     if not bank_name or bank_name == "nan" or "BANK NAME" in bank_name.upper(): 
                         continue
                     
                     if bank_name not in bank_data:
                         bank_data[bank_name] = {}
                     
-                    # Check systematically across up to 20 potential columns or auto-generated indices
-                    for i in range(1, 21):
-                        sb_col = f"Salary Bracket.{i}" if i > 1 else "Salary Bracket"
-                        roi_col = f"ROI.{i}" if i > 1 else "ROI"
+                    # Column E is index 4 in zero-based indexing.
+                    # We step by 2 to capture (Salary Bracket, ROI) pairs sequentially.
+                    num_cols = len(row)
+                    for col_idx in range(4, num_cols - 1, 2):
+                        raw_sb_val = row.iloc[col_idx]
+                        roi_val = row.iloc[col_idx + 1]
                         
-                        # Support alternative spreadsheet naming variations (e.g., spaces or underscores instead of dots)
-                        alt_sb_col = f"Salary Bracket {i}" if i > 1 else "Salary Bracket"
-                        alt_roi_col = f"ROI {i}" if i > 1 else "ROI"
-                        
-                        target_sb = sb_col if sb_col in df_bank.columns else (alt_sb_col if alt_sb_col in df_bank.columns else None)
-                        target_roi = roi_col if roi_col in df_bank.columns else (alt_roi_col if alt_roi_col in df_bank.columns else None)
-                        
-                        if target_sb and target_roi:
-                            raw_sb_val = row[target_sb]
-                            roi_val = row[target_roi]
-                            
-                            if pd.notna(raw_sb_val) and str(raw_sb_val).strip() != "" and pd.notna(roi_val):
-                                # Isolated block protects from text errors (e.g. "TBD", "N/A", or "%" values) in ROI fields
-                                try:
-                                    # Clean up interest rate parsing if it contains a percentage sign
-                                    roi_str = str(roi_val).replace("%", "").strip()
-                                    parsed_roi = float(roi_str)
-                                    if parsed_roi > 1.0:  # If typed as 3.5 instead of 0.035, adjust gracefully
-                                        parsed_roi = parsed_roi / 100.0
-                                        
-                                    norm_sb_val = normalize_bracket_string(raw_sb_val)
+                        if pd.notna(raw_sb_val) and str(raw_sb_val).strip() != "" and pd.notna(roi_val):
+                            try:
+                                # Clean up interest rate formatting
+                                roi_str = str(roi_val).replace("%", "").strip()
+                                parsed_roi = float(roi_str)
+                                if parsed_roi > 1.0:  # Adjust if typed as 3.5 instead of 0.035
+                                    parsed_roi = parsed_roi / 100.0
                                     
-                                    if "-" in norm_sb_val:
-                                        parts = norm_sb_val.split("-")
-                                        display_label = f"{parts[0]}-{parts[1]}"
-                                    else:
-                                        display_label = norm_sb_val
-                                        
-                                    bank_data[bank_name][display_label] = parsed_roi
-                                except:
-                                    continue # Skip this broken field pair smoothly without destroying the parent process
+                                norm_sb_val = normalize_bracket_string(raw_sb_val)
+                                
+                                if "-" in norm_sb_val:
+                                    parts = norm_sb_val.split("-")
+                                    display_label = f"{parts[0]}-{parts[1]}"
+                                else:
+                                    display_label = norm_sb_val
+                                    
+                                bank_data[bank_name][display_label] = parsed_roi
+                            except:
+                                continue # Skip broken field pairs smoothly
                 except:
                     continue
         except Exception as e:
