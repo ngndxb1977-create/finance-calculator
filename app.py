@@ -318,7 +318,7 @@ else:
 
     elif info["type_tag"] == "RMC" and not override_rmc_active:
         temp_rmc_price = info["price_raw"]
-
+        
         # Formulate dynamic U19 reference base to calculate real-time label values
         temp_u19 = (
     base_vehicle_price +
