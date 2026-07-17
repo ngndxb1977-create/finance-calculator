@@ -288,13 +288,13 @@ else:
         
         # We need a quick pass to parse standard accessories to establish the U19 Base for dynamic checkbox pricing
         temp_acc_price = 0.0
-        temp_ceramic_price = 0.0
-        temp_foppfgoldpackage_price = 0.0
-        temp_warranty_price = 0.0
-        temp_rmc_price = 0.0
+    temp_ceramic_price = 0.0
+    temp_foppfgoldpackage_price = 0.0
+    temp_warranty_price = 0.0
+    temp_rmc_price = 0.0
 
-        for name, info in v_data["accessories"].items():
-            if info["type_tag"] == "STANDARD":
+for name, info in v_data["accessories"].items():
+    if info["type_tag"] == "STANDARD":
 
         # Custom Accessories (ACCUMULATE)
         if "CUSTOM" in name.upper() and "ACCESSORIES" in name.upper():
