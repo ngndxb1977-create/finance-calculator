@@ -103,24 +103,29 @@ def load_supplementary_data(file_path):
     bank_data = {}
     rmc_data = {}
     if os.path.exists(file_path):
-        # Parse Bank Details
+        # Parse Bank Details with a smart, recursive column parsing framework
         try:
             df_bank = pd.read_excel(file_path, sheet_name='Bank Details')
             for _, row in df_bank.iterrows():
                 bank_name = str(row['Bank Name']).strip()
-                if not bank_name or bank_name == "nan": continue
+                if not bank_name or bank_name == "nan" or "BANK NAME" in bank_name.upper(): 
+                    continue
                 
-                bank_data[bank_name] = {}
-                for i in range(1, 6):
+                if bank_name not in bank_data:
+                    bank_data[bank_name] = {}
+                
+                # Check systematically across up to 15 columns for multi-bracket packages
+                for i in range(1, 16):
                     sb_col = f"Salary Bracket.{i}" if i > 1 else "Salary Bracket"
                     roi_col = f"ROI.{i}" if i > 1 else "ROI"
                     
                     if sb_col in df_bank.columns and roi_col in df_bank.columns:
                         sb_val = str(row[sb_col]).strip()
                         roi_val = row[roi_col]
-                        if sb_val and sb_val != "nan" and pd.notna(roi_val):
+                        
+                        if sb_val and sb_val != "nan" and sb_val != "" and pd.notna(roi_val):
                             bank_data[bank_name][sb_val] = float(roi_val)
-        except:
+        except Exception as e:
             pass
 
         # Parse RMC Pricing Map
@@ -510,7 +515,7 @@ else:
             with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
                 pd.DataFrame(emi_results).to_excel(writer, index=False, sheet_name="EMI Matrix")
             st.download_button(
-                label="💾 Save as Excel Spreadsheet",  # <-- Renamed to be accurate
+                label="💾 Save as Excel Spreadsheet",
                 data=buffer.getvalue(),
                 file_name=f"{selected_name.replace(' ', '_')}_Summary.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
