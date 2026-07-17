@@ -107,7 +107,7 @@ def normalize_bracket_string(raw_val):
     return val
 
 # ------------------------------------------------------------------
-# MASTER EXCEL EXTRACTION ENGINE (VALUE-BASED ENGINE FOR COLUMN E FIX)
+# MASTER EXCEL EXTRACTION ENGINE (INTELLIGENT COLUMN LOCATOR)
 # ------------------------------------------------------------------
 @st.cache_data
 def load_supplementary_data(file_path):
@@ -120,17 +120,35 @@ def load_supplementary_data(file_path):
             
             for _, row in df_bank.iterrows():
                 try:
-                    # Column index 0 represents Column A (Bank Name)
-                    bank_name = str(row.iloc[0]).strip()
-                    if not bank_name or bank_name == "nan" or "BANK NAME" in bank_name.upper(): 
-                        continue
+                    # --- SMART BANK NAME LOCATOR ---
+                    bank_name = ""
+                    start_col = 1
+                    ignore_headers = ["S.NO", "S. NO", "SR NO", "SR. NO", "SL NO", "SL. NO", "SERIAL", "#"]
                     
+                    # Scan the first 4 columns (A, B, C, D) to bypass Serial Numbers or empty margins
+                    for i in range(4):
+                        if i >= len(row): break
+                        val = str(row.iloc[i]).strip()
+                        
+                        # If the cell is not empty and NOT just a digit (like 1, 2, 3)
+                        if val and val.lower() != "nan" and not val.replace('.', '', 1).isdigit():
+                            # If it's also not a generic "S.No" header label
+                            if val.upper() not in ignore_headers:
+                                bank_name = val
+                                start_col = i + 1  # Start scanning for salaries immediately to the right of the name
+                                break
+                                
+                    # Skip if it's the main header row or empty
+                    if not bank_name or "BANK NAME" in bank_name.upper(): 
+                        continue
+                        
                     if bank_name not in bank_data:
                         bank_data[bank_name] = {}
                     
-                    # Search through every cell column to locate data strings
+                    # --- SALARY BRACKET LOCATOR ---
                     num_cols = len(row)
-                    for col_idx in range(1, num_cols):
+                    # We start scanning exactly where the bank name left off
+                    for col_idx in range(start_col, num_cols):
                         cell_val = row.iloc[col_idx]
                         if pd.isna(cell_val) or str(cell_val).strip() == "":
                             continue
@@ -160,6 +178,7 @@ def load_supplementary_data(file_path):
                                             else:
                                                 display_label = norm_sb_val
                                                 
+                                            # Store it safely
                                             bank_data[bank_name][display_label] = parsed_roi
                                             break # Key-value configuration paired successfully
                                         except:
