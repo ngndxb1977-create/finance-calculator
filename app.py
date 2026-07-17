@@ -522,14 +522,7 @@ else:
         else:
             st.write("*No optional accessories selected.*")
         st.markdown("---")
-        
-        with st.sidebar:
-            st.subheader("📊 Summary")
-            st.write(f"VRI: {vri_calculated_cost:,.2f} AED")
-            st.write(f"Vehicle Insurance: {vehicle_insurance_cost:,.2f} AED")
-            st.write(f"Total Addons: {total_display_addons_price:,.2f} AED")
-            st.write(f"Final Price: {grand_total_cash_outlay:,.2f} AED")
-            
+
         # SECTION 4: TOTAL CASH OUTLAY REQUIRED
         st.header("4. Total Cash Outlay")
         registration_fee = v_data["registration_fee"]
