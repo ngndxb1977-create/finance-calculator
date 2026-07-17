@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import os
 import io
-import re
 
 # Set configuration at the absolute top
 st.set_page_config(page_title="Mitsubishi Financial Matrix Calculator", layout="wide")
@@ -96,16 +95,6 @@ def get_clean_model_name(raw_name):
     elif 'DESTINATOR' in raw_name_upper: return 'Destinator'
     return raw_name
 
-# Normalization helper to clean up formatting variations in Salary Brackets (e.g. spaces, commas)
-def normalize_bracket_string(raw_val):
-    if not raw_val or pd.isna(raw_val):
-        return ""
-    # Clean spacing, commas, and normalize dashes
-    val = str(raw_val).strip().replace(",", "")
-    val = re.sub(r'\s+', '', val)  # strip all whitespace spaces
-    val = val.replace("to", "-").replace("—", "-").replace("–", "-")
-    return val
-
 # ------------------------------------------------------------------
 # MASTER EXCEL EXTRACTION ENGINE
 # ------------------------------------------------------------------
@@ -114,49 +103,30 @@ def load_supplementary_data(file_path):
     bank_data = {}
     rmc_data = {}
     if os.path.exists(file_path):
-        # Parse Bank Details with a strict positional column-pairing engine
+        # Parse Bank Details with a smart, recursive column parsing framework
         try:
             df_bank = pd.read_excel(file_path, sheet_name='Bank Details')
-            
             for _, row in df_bank.iterrows():
-                try:
-                    bank_name = str(row.iloc[0]).strip() # Column A (Bank Name)
-                    if not bank_name or bank_name == "nan" or "BANK NAME" in bank_name.upper(): 
-                        continue
-                    
-                    if bank_name not in bank_data:
-                        bank_data[bank_name] = {}
-                    
-                    # Column E is index 4 in zero-based indexing.
-                    # We step by 2 to capture (Salary Bracket, ROI) pairs sequentially.
-                    num_cols = len(row)
-                    for col_idx in range(4, num_cols - 1, 2):
-                        raw_sb_val = row.iloc[col_idx]
-                        roi_val = row.iloc[col_idx + 1]
-                        
-                        if pd.notna(raw_sb_val) and str(raw_sb_val).strip() != "" and pd.notna(roi_val):
-                            try:
-                                # Clean up interest rate formatting
-                                roi_str = str(roi_val).replace("%", "").strip()
-                                parsed_roi = float(roi_str)
-                                if parsed_roi > 1.0:  # Adjust if typed as 3.5 instead of 0.035
-                                    parsed_roi = parsed_roi / 100.0
-                                    
-                                norm_sb_val = normalize_bracket_string(raw_sb_val)
-                                
-                                if "-" in norm_sb_val:
-                                    parts = norm_sb_val.split("-")
-                                    display_label = f"{parts[0]}-{parts[1]}"
-                                else:
-                                    display_label = norm_sb_val
-                                    
-                                bank_data[bank_name][display_label] = parsed_roi
-                            except:
-                                continue # Skip broken field pairs smoothly
-                except:
+                bank_name = str(row['Bank Name']).strip()
+                if not bank_name or bank_name == "nan" or "BANK NAME" in bank_name.upper(): 
                     continue
+                
+                if bank_name not in bank_data:
+                    bank_data[bank_name] = {}
+                
+                # Check systematically across up to 15 columns for multi-bracket packages
+                for i in range(1, 16):
+                    sb_col = f"Salary Bracket.{i}" if i > 1 else "Salary Bracket"
+                    roi_col = f"ROI.{i}" if i > 1 else "ROI"
+                    
+                    if sb_col in df_bank.columns and roi_col in df_bank.columns:
+                        sb_val = str(row[sb_col]).strip()
+                        roi_val = row[roi_col]
+                        
+                        if sb_val and sb_val != "nan" and sb_val != "" and pd.notna(roi_val):
+                            bank_data[bank_name][sb_val] = float(roi_val)
         except Exception as e:
-            st.error(f"Critical error initializing Bank Details sheet: {e}")
+            pass
 
         # Parse RMC Pricing Map
         try:
