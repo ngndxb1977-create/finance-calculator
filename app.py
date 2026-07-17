@@ -221,7 +221,7 @@ def load_all_vehicle_data(vehicle_file_path):
 # ------------------------------------------------------------------
 # CONFIG & FILE TARGETS
 # ------------------------------------------------------------------
-FILE_VEHICLES = "NFC New VRI Project (2).xlsx"  
+FILE_VEHICLES = "NFC New VRI Project (2) (2).xlsx"  
 FILE_SUPPLEMENT = "Bank & RMC Details.xlsx"
 
 VEHICLE_CATALOG = load_all_vehicle_data(FILE_VEHICLES)
