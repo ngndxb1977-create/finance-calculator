@@ -452,11 +452,11 @@ else:
         bank_processing_fee = finance_amount * 0.0105
 
         with st.sidebar:
-    st.subheader("📊 Summary")
-    st.write(f"VRI: {vri_calculated_cost:,.2f} AED")
-    st.write(f"Vehicle Insurance: {vehicle_insurance_cost:,.2f} AED")
-    st.write(f"Total Addons: {total_display_addons_price:,.2f} AED")
-    st.write(f"Final Price: {grand_total_cash_outlay:,.2f} AED")
+            st.subheader("📊 Summary")
+            st.write(f"VRI: {vri_calculated_cost:,.2f} AED")
+            st.write(f"Vehicle Insurance: {vehicle_insurance_cost:,.2f} AED")
+            st.write(f"Total Addons: {total_display_addons_price:,.2f} AED")
+            st.write(f"Final Price: {grand_total_cash_outlay:,.2f} AED")
 
         # Calculate Cash Outlay EXCLUDING Insurance Costs
         total_cash_outlay = (calculated_downpayment + dp_processing_fee + bank_processing_fee)
