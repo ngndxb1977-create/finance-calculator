@@ -288,36 +288,36 @@ else:
         
         # We need a quick pass to parse standard accessories to establish the U19 Base for dynamic checkbox pricing
         temp_acc_price = 0.0
-    temp_ceramic_price = 0.0
-    temp_foppfgoldpackage_price = 0.0
-    temp_warranty_price = 0.0
-    temp_rmc_price = 0.0
+        temp_ceramic_price = 0.0
+        temp_foppfgoldpackage_price = 0.0
+        temp_warranty_price = 0.0
+        temp_rmc_price = 0.0
 
-for name, info in v_data["accessories"].items():
-    if info["type_tag"] == "STANDARD":
+        for name, info in v_data["accessories"].items():
+            if info["type_tag"] == "STANDARD":
 
         # Custom Accessories (ACCUMULATE)
-        if "CUSTOM" in name.upper() and "ACCESSORIES" in name.upper():
-            temp_acc_price += info["price_raw"]
+            if "CUSTOM" in name.upper() and "ACCESSORIES" in name.upper():
+                temp_acc_price += info["price_raw"]
 
         # Ceramic
-        elif "CERAMIC" in name.upper() and "WINDOW" in name.upper():
-            temp_ceramic_price = info["price_raw"]
+            elif "CERAMIC" in name.upper() and "WINDOW" in name.upper():
+                temp_ceramic_price = info["price_raw"]
 
         # FO PPF Gold Package
-        elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
-            temp_foppfgoldpackage_price = info["price_raw"]
+            elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
+                temp_foppfgoldpackage_price = info["price_raw"]
 
         # Extended Warranty
-        elif "WARRANTY" in name.upper():
-            temp_warranty_price = info["price_raw"]
+            elif "WARRANTY" in name.upper():
+                temp_warranty_price = info["price_raw"]
 
         # Any other standard accessory (ACCUMULATE)
-        else:
-            temp_acc_price += info["price_raw"]
+            else:
+                temp_acc_price += info["price_raw"]
 
-    elif info["type_tag"] == "RMC" and not override_rmc_active:
-        temp_rmc_price = info["price_raw"]
+        elif info["type_tag"] == "RMC" and not override_rmc_active:
+            temp_rmc_price = info["price_raw"]
 
         # Formulate dynamic U19 reference base to calculate real-time label values
         temp_u19 = (
