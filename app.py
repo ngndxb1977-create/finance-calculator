@@ -357,9 +357,9 @@ else:
                     elif "FOPPF" in name.upper() or "GOLD PACKAGE" in name.upper():
                         foppfgoldpackage_selected_price = display_price
                     elif "WARRANTY" in name.upper():
-                        warranty_selected_price += display_price
+                        warranty_selected_price = display_price
                     else:
-                        acc_selected_price = display_price
+                        acc_selected_price += display_price
                     checked_addons_list.append({"name": display_name, "price": display_price, "vat_taxable": True})
                 elif info["type_tag"] == "VRI":
                     is_vri_selected = True
