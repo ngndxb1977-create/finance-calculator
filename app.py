@@ -524,7 +524,6 @@ else:
        # SECTION 5: DOCUMENTATION REQUIREMENTS & DISCLOSURES
         st.header("5. Application Requirements & Disclosures")
         
-        # Use a raw string (r"...") to prevent issues with backslashes or special symbols
         st.markdown(r"""
         <div style="background-color: #F4F0EA; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #191919; margin-top: 1.5rem;">
             <strong style="font-family: sans-serif; font-size: 1.1rem; color: #191919; display: block; margin-bottom: 0.75rem;">📋 Required Documentation Checklist:</strong>
@@ -551,7 +550,7 @@ else:
             </p>
         </div>
         """, unsafe_allow_html=True)
-        )
+        
         st.markdown("<br>", unsafe_allow_html=True)
 
         col_space_left, col_btn1, col_btn2, col_space_right = st.columns([1, 2, 2, 1])
