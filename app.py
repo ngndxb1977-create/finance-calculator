@@ -301,21 +301,6 @@ else:
         st.markdown("---")
         st.subheader("💳 Down Payment Financing Plan")
         finance_dp_option = st.toggle("Finance the Down Payment?", value=False)
-        
-        if finance_dp_option:
-            dp_tenor_selection = st.selectbox("Select DP Term Structure:", ["3 Months (0.00% ROI)", "12 Months (5.25% ROI)", "24 Months (6.30% ROI)"])
-            if "3 Months" in dp_tenor_selection:
-                dp_interest_rate = 0.0000
-                dp_months = 3
-            elif "12 Months" in dp_tenor_selection:
-                dp_interest_rate = 0.0525
-                dp_months = 12
-            else:
-                dp_interest_rate = 0.0630
-                dp_months = 24
-        else:
-            dp_interest_rate = 0.0
-            dp_months = 0
 
         st.markdown("---")
         st.subheader("➕ Custom Accessories Checklists")
