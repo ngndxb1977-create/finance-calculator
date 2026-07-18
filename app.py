@@ -442,7 +442,6 @@ else:
             })
         st.table(pd.DataFrame(vehicle_emi_results))
         
-        # Down Payment Loan Table (Only appears if feature is selected)
         # Down Payment Loan Table (Displays all 3 options automatically)
         if finance_dp_option:
             st.markdown("<br>", unsafe_allow_html=True)
