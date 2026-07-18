@@ -443,23 +443,34 @@ else:
         st.table(pd.DataFrame(vehicle_emi_results))
         
         # Down Payment Loan Table (Only appears if feature is selected)
+        # Down Payment Loan Table (Displays all 3 options automatically)
         if finance_dp_option:
             st.markdown("<br>", unsafe_allow_html=True)
-            st.subheader("🔵 Down Payment Loan Financing (Isolated Schedule)")
+            st.subheader("🔵 Down Payment Loan Financing Options")
             vehicle_reservation_fee = v_data["reservation_fee"]
             dp_financed_base = max(0.0, calculated_downpayment - vehicle_reservation_fee)
             
-            dp_total_interest = dp_financed_base * dp_interest_rate * (dp_months / 12.0)
-            dp_monthly_emi = (dp_financed_base + dp_total_interest) / dp_months
-
-            dp_summary_results = [{
-                "Financed DP Balance": f"{dp_financed_base:,.2f} AED",
-                "Applied Flat ROI %": f"{dp_interest_rate*100:.2f}%",
-                "Loan Tenor": f"{dp_months} Months",
-                "Total Interest Cost": f"{dp_total_interest:,.2f} AED",
-                "Monthly DP Installment": f"{dp_monthly_emi:,.2f} AED"
-            }]
-            st.table(pd.DataFrame(dp_summary_results))
+            # Define the 3 options
+            dp_options = [
+                {"months": 3, "rate": 0.0000, "label": "3 Months (0.00% ROI)"},
+                {"months": 12, "rate": 0.0525, "label": "12 Months (5.25% ROI)"},
+                {"months": 24, "rate": 0.0630, "label": "24 Months (6.30% ROI)"}
+            ]
+            
+            dp_results = []
+            for opt in dp_options:
+                total_interest = dp_financed_base * opt["rate"] * (opt["months"] / 12.0)
+                monthly_emi = (dp_financed_base + total_interest) / opt["months"]
+                
+                dp_results.append({
+                    "Term": opt["label"],
+                    "Financed Balance": f"{dp_financed_base:,.2f} AED",
+                    "Total Interest": f"{total_interest:,.2f} AED",
+                    "Monthly EMI": f"{monthly_emi:,.2f} AED"
+                })
+            
+            st.table(pd.DataFrame(dp_results))
+            st.caption("ℹ️ *Comparison of available Down Payment loan financing terms.*")
             st.caption(f"ℹ️ *This Down Payment loan runs independently and stops entirely after Month {dp_months}.*")
 
         st.markdown("---")
