@@ -523,35 +523,34 @@ else:
 
        # SECTION 5: DOCUMENTATION REQUIREMENTS & DISCLOSURES
         st.header("5. Application Requirements & Disclosures")
-        st.markdown(
-            """
-            <div class="requirement-box">
-                <strong style="font-family: 'Quicksand', sans-serif; font-size: 1.1rem; color: #191919; display: block; margin-bottom: 0.75rem;">📋 Required Documentation Checklist:</strong>
-                <ul>
-                    <li>Passport Copy, Digital Visa & Address Page For Indian Passport, Page #44 For Philippines Passport.</li>
-                    <li>Emirates ID Card Copy Both Sides.</li>
-                    <li>Labour Card / Free Zone / Employer ID.</li>
-                    <li>Copy of the UAE Driver's License Both Sides.</li>
-                    <li>Current Dated Salary Certificate from The Employer.</li>
-                    <li>Pay Slips For The Last 3 Months - [If Variance In Salary].</li>
-                    <li>IBAN.</li>
-                </ul>
-                <p style="font-weight: 600; margin-top: 1rem; color: #191919;">✍️ Security Cheque for Bank:</p>
-                <p style="font-size: 0.95rem; padding-left: 0.5rem; color: #383838;">One Security Cheque bank need from your salary account after finance approval from the bank.</p>
-                
-                <hr style="border: 0; border-top: 1px solid #D1C9BE; margin: 1.25rem 0;">
-                
-                <p class="disclaimer-text">*** Please bring this Calculation Sheet at the time of submission of full documents (clear copies). Interest rate may vary subject to salary and bank applied.</p>
-                
-                <p style="margin-top: 1.25rem; font-weight: 600; font-size: 0.95rem; color: #191919;">
-                    📧 For Any Further Clarification On Finance Kindly Forward An Email: 
-                    <a href="mailto:naveen@habtoormotors.com" style="color: #191919; font-weight:700;">naveen@habtoormotors.com</a> 
-                    Or Reach Us On Boardline: <strong>04-608-4000</strong>
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True
+        
+        # Use a raw string (r"...") to prevent issues with backslashes or special symbols
+        st.markdown(r"""
+        <div style="background-color: #F4F0EA; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #191919; margin-top: 1.5rem;">
+            <strong style="font-family: sans-serif; font-size: 1.1rem; color: #191919; display: block; margin-bottom: 0.75rem;">📋 Required Documentation Checklist:</strong>
+            <ul style="margin-bottom: 1rem; padding-left: 1.25rem;">
+                <li>Passport Copy, Digital Visa & Address Page For Indian Passport, Page #44 For Philippines Passport.</li>
+                <li>Emirates ID Card Copy Both Sides.</li>
+                <li>Labour Card / Free Zone / Employer ID.</li>
+                <li>Copy of the UAE Driver's License Both Sides.</li>
+                <li>Current Dated Salary Certificate from The Employer.</li>
+                <li>Pay Slips For The Last 3 Months - [If Variance In Salary].</li>
+                <li>IBAN.</li>
+            </ul>
+            <p style="font-weight: 600; margin-top: 1rem; color: #191919;">✍️ Security Cheque for Bank:</p>
+            <p style="font-size: 0.95rem; padding-left: 0.5rem; color: #383838;">One Security Cheque bank need from your salary account after finance approval from the bank.</p>
             
+            <hr style="border: 0; border-top: 1px solid #D1C9BE; margin: 1.25rem 0;">
+            
+            <p style="font-size: 0.85rem; color: #555555; margin-top: 0.5rem; line-height: 1.4;">*** Please bring this Calculation Sheet at the time of submission of full documents (clear copies). Interest rate may vary subject to salary and bank applied.</p>
+            
+            <p style="margin-top: 1.25rem; font-weight: 600; font-size: 0.95rem; color: #191919;">
+                📧 For Any Further Clarification On Finance Kindly Forward An Email: 
+                <a href="mailto:naveen@habtoormotors.com" style="color: #191919; font-weight:700;">naveen@habtoormotors.com</a> 
+                Or Reach Us On Boardline: <strong>04-608-4000</strong>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
         )
         st.markdown("<br>", unsafe_allow_html=True)
 
