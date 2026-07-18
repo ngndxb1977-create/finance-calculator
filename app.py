@@ -469,9 +469,7 @@ else:
                 })
             
             st.table(pd.DataFrame(dp_results))
-            st.caption("ℹ️ *Comparison of available Down Payment loan financing terms.*")
-            st.caption(f"ℹ️ *This Down Payment loan runs independently and stops entirely after Month {dp_months}.*")
-
+            
         st.markdown("---")
 
         # SECTION 3: ACCESSORIES BREAKDOWN
