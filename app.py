@@ -521,7 +521,7 @@ else:
         )
         st.markdown("---")
 
-        # SECTION 5: DOCUMENTATION REQUIREMENTS & DISCLOSURES
+       # SECTION 5: DOCUMENTATION REQUIREMENTS & DISCLOSURES
         st.header("5. Application Requirements & Disclosures")
         st.markdown(
             """
@@ -542,14 +542,16 @@ else:
                 <hr style="border: 0; border-top: 1px solid #D1C9BE; margin: 1.25rem 0;">
                 
                 <p class="disclaimer-text">*** Please bring this Calculation Sheet at the time of submission of full documents (clear copies). Interest rate may vary subject to salary and bank applied.</p>
-                <p class="disclaimer-text">*** This sheet is only communication between dealer and the customer, avoid discussing with bank personal.</p>
                 
                 <p style="margin-top: 1.25rem; font-weight: 600; font-size: 0.95rem; color: #191919;">
-                    📧 For Any Further Clarification On Finance Kindly Forward An Email: <a href="mailto:naveen@habtoormotors.com" style="color: #191919; font-weight:700;">naveen@habtoormotors.com</a> Or Reach Us On Boardline: <strong>04-608-4000</strong>
+                    📧 For Any Further Clarification On Finance Kindly Forward An Email: 
+                    <a href="mailto:naveen@habtoormotors.com" style="color: #191919; font-weight:700;">naveen@habtoormotors.com</a> 
+                    Or Reach Us On Boardline: <strong>04-608-4000</strong>
                 </p>
             </div>
             """,
             unsafe_allow_html=True
+            
         )
         st.markdown("<br>", unsafe_allow_html=True)
 
